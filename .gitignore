@@ -19,9 +19,6 @@ node_modules/
 dist/
 .next/
 
-# Data (optional — PDFs might be too large)
-data/raw/*.pdf
-
 # OS
 .DS_Store
 Thumbs.db
