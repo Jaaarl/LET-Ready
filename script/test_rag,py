@@ -1,0 +1,55 @@
+import chromadb
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+CHROMA_PATH = os.getenv("CHROMA_PATH")
+
+# ── Connect to ChromaDB ────────────────────────────────────────────────────
+client     = chromadb.PersistentClient(path=CHROMA_PATH)
+collection = client.get_collection("let_questions")
+
+print(f"✅ Connected! Total questions: {collection.count()}\n")
+
+# ── Test 1: Search by meaning ──────────────────────────────────────────────
+print("=" * 50)
+print("TEST 1: Semantic search")
+print("=" * 50)
+results = collection.query(
+    query_texts=["smallest unit of life"],
+    n_results=3
+)
+for i, meta in enumerate(results["metadatas"][0]):
+    print(f"\nResult {i+1}:")
+    print(f"  Question : {meta['question'][:80]}...")
+    print(f"  Answer   : {meta['answer']}. {meta['answer_text']}")
+    print(f"  Topic    : {meta['topic']}")
+
+# ── Test 2: Filter by subject ──────────────────────────────────────────────
+print("\n" + "=" * 50)
+print("TEST 2: Filter by subject")
+print("=" * 50)
+results = collection.query(
+    query_texts=["parts of the human brain"],
+    n_results=3,
+    where={"subject": "General Education"}
+)
+for i, meta in enumerate(results["metadatas"][0]):
+    print(f"\nResult {i+1}:")
+    print(f"  Question : {meta['question'][:80]}...")
+    print(f"  Topic    : {meta['topic']}")
+
+# ── Test 3: Filter by topic ────────────────────────────────────────────────
+print("\n" + "=" * 50)
+print("TEST 3: Filter by topic")
+print("=" * 50)
+results = collection.query(
+    query_texts=["teaching methods and strategies"],
+    n_results=3,
+    where={"topic": "Principles of Teaching"}
+)
+for i, meta in enumerate(results["metadatas"][0]):
+    print(f"\nResult {i+1}:")
+    print(f"  Question : {meta['question'][:80]}...")
+    print(f"  Answer   : {meta['answer']}. {meta['answer_text']}")
