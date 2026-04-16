@@ -1,11 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import quiz, search, chat
+from dotenv import load_dotenv
+load_dotenv()
 import chromadb
 import os
-from dotenv import load_dotenv
+from routers import quiz, search, chat
 
-load_dotenv()
+
+
+
 
 app = FastAPI(
     title="LET Ready API",
