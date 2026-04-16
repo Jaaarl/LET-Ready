@@ -1,11 +1,16 @@
 import { useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import api from "../api/client";
 
 export default function Chat() {
+  const location = useLocation();
+  const wrongAnswers = location.state?.wrongAnswers || [];
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      text: "Hi! I am your LET exam tutor. Ask me anything about the topics you are studying!",
+      text: wrongAnswers.length > 0
+        ? `I see you missed ${wrongAnswers.length} question${wrongAnswers.length > 1 ? "s" : ""}. Let me help you understand what went wrong. What would you like to ask about?`
+        : "Hi! I am your LET exam tutor. Ask me anything about the topics you are studying!",
     },
   ]);
   const [input, setInput] = useState("");
@@ -25,7 +30,10 @@ export default function Chat() {
     setLoading(true);
 
     try {
-      const res = await api.post("/chat/", { message: userMsg });
+      const res = await api.post("/chat/", {
+        message: userMsg,
+        wrong_answers: wrongAnswers,
+      });
       setMessages((prev) => [
         ...prev,
         { role: "assistant", text: res.data.answer },

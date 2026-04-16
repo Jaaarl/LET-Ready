@@ -19,6 +19,7 @@ export default function Quiz() {
   const [current, setCurrent] = useState(0);
   const [answered, setAnswered] = useState(null);
   const [score, setScore] = useState(0);
+  const [wrongAnswers, setWrongAnswers] = useState([]);
   const [started, setStarted] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -43,15 +44,22 @@ export default function Quiz() {
     const result = {
       ...res.data,
       selected,
+      question: q.question,
+      subject: q.subject,
+      topic: q.topic,
     };
     setAnswered(result);
-    if (result.is_correct) setScore((s) => s + 1);
+    if (result.is_correct) {
+      setScore((s) => s + 1);
+    } else {
+      setWrongAnswers((prev) => [...prev, result]);
+    }
   }
 
   function handleNext() {
     if (current + 1 >= TOTAL) {
       navigate("/results", {
-        state: { score, total: TOTAL, subject },
+        state: { score, total: TOTAL, subject, wrongAnswers },
       });
       return;
     }

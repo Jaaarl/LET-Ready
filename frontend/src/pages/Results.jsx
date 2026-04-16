@@ -3,7 +3,7 @@ import { useLocation, useNavigate, Link } from "react-router-dom";
 export default function Results() {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const { score, total, subject } = state || { score: 0, total: 10 };
+  const { score, total, subject, wrongAnswers } = state || { score: 0, total: 10, wrongAnswers: [] };
   const pct = Math.round((score / total) * 100);
 
   const grade =
@@ -40,6 +40,7 @@ export default function Results() {
           </button>
           <Link
             to="/chat"
+            state={{ wrongAnswers }}
             className="border border-gray-300 text-gray-700 py-3
                        rounded-xl font-medium hover:border-blue-400
                        hover:text-blue-600 transition"
