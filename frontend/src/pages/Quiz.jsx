@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import api from "../api/client";
 import QuestionCard from "../components/QuestionCard";
 import ProgressBar from "../components/ProgressBar";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const SUBJECTS = [
   "All",
@@ -14,6 +15,7 @@ const SUBJECTS = [
 const TOTAL = 10;
 
 export default function Quiz() {
+  const { user } = useAuth();
   const [subject, setSubject] = useState("All");
   const [questions, setQuestions] = useState([]);
   const [current, setCurrent] = useState(0);
@@ -56,8 +58,21 @@ export default function Quiz() {
     }
   }
 
-  function handleNext() {
+  async function handleNext() {
     if (current + 1 >= TOTAL) {
+      // Save session for logged-in users
+      if (user) {
+        try {
+          await api.post("/quiz/save-session", {
+            subject,
+            score,
+            total: TOTAL,
+            wrong_answers: wrongAnswers,
+          });
+        } catch (err) {
+          console.error("Failed to save session:", err);
+        }
+      }
       navigate("/results", {
         state: { score, total: TOTAL, subject, wrongAnswers },
       });

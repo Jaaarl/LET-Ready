@@ -4,6 +4,9 @@ import Home from "./pages/Home";
 import Quiz from "./pages/Quiz";
 import Chat from "./pages/Chat";
 import Results from "./pages/Results";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   return (
@@ -16,9 +19,23 @@ export default function App() {
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/results" element={<Results />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </main>
       </div>
     </BrowserRouter>
   );
+}
+
+function Profile() {
+  return <div className="text-gray-600">Profile page coming soon.</div>;
 }

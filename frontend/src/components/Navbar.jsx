@@ -1,7 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Navbar() {
   const { pathname } = useLocation();
+  const { user, logout } = useAuth();
 
   const links = [
     { to: "/", label: "Home" },
@@ -12,8 +14,8 @@ export default function Navbar() {
   return (
     <nav className="bg-white border-b border-gray-200 px-4 py-3">
       <div className="max-w-3xl mx-auto flex items-center justify-between">
-        <span className="font-semibold text-blue-600 text-lg">LET Ready</span>
-        <div className="flex gap-4">
+        <Link to="/" className="font-semibold text-blue-600 text-lg">LET Ready</Link>
+        <div className="flex gap-4 items-center">
           {links.map((l) => (
             <Link
               key={l.to}
@@ -28,6 +30,24 @@ export default function Navbar() {
               {l.label}
             </Link>
           ))}
+          {user ? (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Hi, {user.name}</span>
+              <button
+                onClick={logout}
+                className="text-xs text-red-500 hover:text-red-700 font-medium"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="text-sm font-medium text-blue-600 hover:underline"
+            >
+              Sign in
+            </Link>
+          )}
         </div>
       </div>
     </nav>

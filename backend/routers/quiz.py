@@ -1,5 +1,8 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, HTTPException
+from pydantic import BaseModel
 import random
+from auth.dependencies import optional_user
+from models.quiz import save_quiz_session, save_wrong_answers_batch
 
 router = APIRouter()
 
@@ -75,7 +78,7 @@ def format_question(meta: dict, doc_id: str = None) -> dict:
         "question":  meta["question"],
         "subject":   meta["subject"],
         "topic":     meta["topic"],
-        "answer":    meta["answer"],     
+        "answer":    meta["answer"],
         "choices": {
             "A": meta["choice_a"],
             "B": meta["choice_b"],
@@ -83,3 +86,24 @@ def format_question(meta: dict, doc_id: str = None) -> dict:
             "D": meta["choice_d"],
         }
     }
+
+
+class SaveSessionRequest(BaseModel):
+    subject: str
+    score: int
+    total: int
+    wrong_answers: list
+
+
+@router.post("/save-session")
+def post_save_session(
+    body: SaveSessionRequest,
+    user: dict = None,
+):
+    """Save quiz results — only for logged-in users."""
+    if not user:
+        raise HTTPException(status_code=401, detail="Login required to save progress")
+    save_quiz_session(user["id"], body.subject, body.score, body.total)
+    if body.wrong_answers:
+        save_wrong_answers_batch(user["id"], body.wrong_answers)
+    return {"saved": True}

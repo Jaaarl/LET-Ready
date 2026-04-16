@@ -7,4 +7,10 @@ const client = axios.create({
   },
 });
 
+// Restore auth token on page load
+const token = localStorage.getItem("let_token");
+if (token) {
+  client.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+}
+
 export default client;
