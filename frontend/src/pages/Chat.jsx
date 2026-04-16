@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
 import api from "../api/client";
 
 export default function Chat() {
@@ -75,7 +76,7 @@ export default function Chat() {
                     : "bg-white border border-gray-200 text-gray-700 rounded-bl-sm"
                 }`}
             >
-              {m.text}
+              <ReactMarkdown>{m.text}</ReactMarkdown>
             </div>
           </div>
         ))}
