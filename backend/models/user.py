@@ -1,6 +1,6 @@
 import sqlite3
 import os
-import hashlib
+import bcrypt
 import secrets
 from datetime import datetime, timezone
 from typing import Optional
@@ -34,7 +34,7 @@ def init_db():
 def create_user(email: str, name: str, password: str) -> dict:
     conn = sqlite3.connect(_get_db_path())
     uid = secrets.token_hex(16)
-    pw_hash = hashlib.sha256(password.encode()).hexdigest()
+    pw_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
     now = datetime.now(timezone.utc).isoformat()
     try:
         conn.execute(
@@ -82,4 +82,4 @@ def get_user_by_id(user_id: str) -> Optional[dict]:
 
 
 def verify_password(stored_hash: str, password: str) -> bool:
-    return hashlib.sha256(password.encode()).hexdigest() == stored_hash
+    return bcrypt.checkpw(password.encode(), stored_hash.encode())

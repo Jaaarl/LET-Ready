@@ -2,7 +2,9 @@ import os
 from datetime import datetime, timedelta, timezone
 from jose import jwt
 
-SECRET_KEY = os.getenv("JWT_SECRET", "change-me-in-production-use-long-random-string")
+SECRET_KEY = os.getenv("JWT_SECRET")
+if not SECRET_KEY:
+    raise RuntimeError("JWT_SECRET environment variable must be set")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 24 * 7  # 7 days
 
