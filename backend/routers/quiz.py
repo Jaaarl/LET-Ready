@@ -5,12 +5,10 @@ router = APIRouter()
 
 @router.get("/random")
 def get_random_question(request: Request, subject: str = None):
-    """Get a random question, optionally filtered by subject."""
     collection = request.app.state.collection
 
     where = {"subject": subject} if subject else None
 
-    # Get more than needed then pick random
     results = collection.query(
         query_texts=["exam question"],
         n_results=50,
@@ -20,16 +18,17 @@ def get_random_question(request: Request, subject: str = None):
     if not results["metadatas"][0]:
         return {"error": "No questions found"}
 
-    # Pick one randomly
+    import random
     idx  = random.randint(0, len(results["metadatas"][0]) - 1)
     meta = results["metadatas"][0][idx]
+    # ✅ Pass the actual ChromaDB document ID
+    doc_id = results["ids"][0][idx]
 
-    return format_question(meta)
+    return format_question(meta, doc_id)
 
 
 @router.get("/by-topic")
 def get_question_by_topic(request: Request, topic: str, n: int = 5):
-    """Get questions filtered by topic."""
     collection = request.app.state.collection
 
     results = collection.query(
@@ -39,10 +38,14 @@ def get_question_by_topic(request: Request, topic: str, n: int = 5):
     )
 
     questions = [
-        format_question(meta)
-        for meta in results["metadatas"][0]
+        format_question(meta, doc_id)
+        for meta, doc_id in zip(
+            results["metadatas"][0],
+            results["ids"][0]
+        )
     ]
     return {"questions": questions, "total": len(questions)}
+
 
 
 @router.post("/check-answer")
@@ -66,11 +69,13 @@ def check_answer(request: Request, question_id: str, selected: str):
     }
 
 
-def format_question(meta: dict) -> dict:
+def format_question(meta: dict, doc_id: str = None) -> dict:
     return {
+        "id":        doc_id or "",
         "question":  meta["question"],
         "subject":   meta["subject"],
         "topic":     meta["topic"],
+        "answer":    meta["answer"],     
         "choices": {
             "A": meta["choice_a"],
             "B": meta["choice_b"],
