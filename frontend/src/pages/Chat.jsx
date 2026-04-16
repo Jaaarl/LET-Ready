@@ -73,7 +73,7 @@ export default function Chat() {
                 ${
                   m.role === "user"
                     ? "bg-blue-600 text-white rounded-br-sm"
-                    : "bg-white border border-gray-200 text-gray-700 rounded-bl-sm"
+                    : "bg-white border border-gray-200 text-gray-700 rounded-bl-sm prose"
                 }`}
             >
               <ReactMarkdown>{m.text}</ReactMarkdown>

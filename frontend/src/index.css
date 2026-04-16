@@ -1,1 +1,38 @@
 @import "tailwindcss";
+
+/* Markdown tables in chat bubbles — scrollable if too wide */
+.prose table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  margin: 0.5rem 0;
+}
+
+.prose th,
+.prose td {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #e5e7eb;
+}
+
+/* Paragraphs and lists inside chat bubbles */
+.prose p {
+  margin: 0.3rem 0;
+}
+
+.prose ul {
+  margin: 0.3rem 0;
+  padding-left: 1.2rem;
+}
+
+.prose li {
+  margin: 0.15rem 0;
+}
+
+/* Headings inside chat bubbles — smaller */
+.prose h1,
+.prose h2,
+.prose h3 {
+  font-size: 1rem;
+  margin: 0.5rem 0 0.2rem;
+}
